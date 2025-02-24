@@ -8,6 +8,7 @@ class FlatAdmin(admin.ModelAdmin):
     fields = (
         'owner',
         'owners_phonenumber',
+        'new_building',
         'price',
         'town',
         'town_district',
