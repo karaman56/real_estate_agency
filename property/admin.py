@@ -1,6 +1,6 @@
 from django.contrib import admin
+from .models import Complaint, Flat
 
-from .models import Flat
 
 class FlatAdmin(admin.ModelAdmin):
     search_fields = ['town', 'address']
@@ -11,8 +11,6 @@ class FlatAdmin(admin.ModelAdmin):
         'active',
         'town'
     ]
-
-
     list_display = (
         'address',
         'price',
@@ -27,7 +25,7 @@ class FlatAdmin(admin.ModelAdmin):
         'construction_year',
         'town'
     )
-fields = (
+    fields = (
         'owner',
         'owners_phonenumber',
         'new_building',
@@ -45,5 +43,22 @@ fields = (
     )
 
 
-
 admin.site.register(Flat, FlatAdmin)
+
+
+class ComplaintAdmin(admin.ModelAdmin):
+    raw_id_fields = ['user', 'flat']
+    readonly_fields = ['created_at']
+    list_display = ('user', 'flat', 'created_at', 'short_text')
+    search_fields = ('text',)
+    list_filter = ('created_at',)
+
+    def short_text(self, obj):
+        if obj.text:
+            return f"{obj.text[:50]}..." if len(obj.text) > 50 else obj.text
+        return "Текст отсутствует"
+
+    short_text.short_description = 'Текст жалобы'
+
+
+admin.site.register(Complaint, ComplaintAdmin)
