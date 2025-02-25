@@ -5,6 +5,14 @@ from .models import Flat
 class FlatAdmin(admin.ModelAdmin):
     search_fields = ['town', 'address']
     readonly_fields = ['created_at']
+    list_filter = [
+        'new_building',
+        'has_balcony',
+        'active',
+        'town'
+    ]
+
+
     list_display = (
         'address',
         'price',
