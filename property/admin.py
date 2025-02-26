@@ -5,6 +5,7 @@ from .models import Complaint, Flat
 class FlatAdmin(admin.ModelAdmin):
     search_fields = ['town', 'address']
     readonly_fields = ['created_at']
+    raw_id_fields = ['liked_by']
     list_filter = [
         'new_building',
         'has_balcony',
@@ -40,6 +41,7 @@ class FlatAdmin(admin.ModelAdmin):
         'active',
         'construction_year',
         'created_at',
+        'liked_by',
     )
 
 
