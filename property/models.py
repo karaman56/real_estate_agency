@@ -1,12 +1,15 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 User = get_user_model()
 
 class Flat(models.Model):
     owner = models.CharField('ФИО владельца', max_length=200)
-    owners_phonenumber = models.CharField('Номер владельца', max_length=20)
+    owners_phonenumber = PhoneNumberField('Нормализованный номер владельца', region='RU', blank=True, null=True)
+
     created_at = models.DateTimeField(
         'Когда создано объявление',
         default=timezone.now,
@@ -41,7 +44,7 @@ class Flat(models.Model):
         blank=True,
         db_index=True)
 
-    has_balcony = models.NullBooleanField('Наличие балкона', db_index=True)
+    has_balcony = models.BooleanField('Наличие балкона', db_index=True, null=True, blank=True)
 
     active = models.BooleanField('Активно-ли объявление', db_index=True)
 
