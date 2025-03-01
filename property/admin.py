@@ -2,7 +2,14 @@ from django.contrib import admin
 from .models import Complaint, Flat, Owner
 
 
+class OwnerFlatInline(admin.TabularInline):
+    model = Flat.owners.through
+    raw_id_fields = ('owner',)
+    extra = 0
+
+
 class FlatAdmin(admin.ModelAdmin):
+    inlines = [OwnerFlatInline]
     search_fields = ['town', 'address']
     readonly_fields = ['created_at']
     raw_id_fields = ['liked_by']
@@ -45,8 +52,12 @@ class FlatAdmin(admin.ModelAdmin):
         'liked_by',
     )
 
-
 admin.site.register(Flat, FlatAdmin)
+
+class OwnerFlatInline(admin.TabularInline):
+    model = Flat.owners.through
+    raw_id_fields = ('owner',)
+    extra = 0
 
 
 class ComplaintAdmin(admin.ModelAdmin):
@@ -68,8 +79,12 @@ admin.site.register(Complaint, ComplaintAdmin)
 
 
 class OwnerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phonenumber', 'pure_phone')
+    list_display = ('name', 'phonenumber', 'pure_phone', 'get_flats',)
     raw_id_fields = ('flats',)
     search_fields = ['name']
+    @admin.display(description='Квартиры в собственности')
+    def get_flats(self, obj):
+        return ", ".join([flat.address for flat in obj.flats.all()])
+
 
 admin.site.register(Owner, OwnerAdmin)
