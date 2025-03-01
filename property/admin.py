@@ -51,8 +51,8 @@ class FlatAdmin(admin.ModelAdmin):
         'created_at',
         'liked_by',
     )
-
 admin.site.register(Flat, FlatAdmin)
+
 
 class OwnerFlatInline(admin.TabularInline):
     model = Flat.owners.through
@@ -66,6 +66,7 @@ class ComplaintAdmin(admin.ModelAdmin):
     list_display = ('user', 'flat', 'created_at', 'short_text')
     search_fields = ('text',)
     list_filter = ('created_at',)
+
 
     def short_text(self, obj):
         if obj.text:
