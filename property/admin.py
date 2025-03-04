@@ -35,7 +35,6 @@ class FlatAdmin(admin.ModelAdmin):
     )
     fields = (
         'owner',
-        'owners_phonenumber',
         'owner_pure_phone',
         'new_building',
         'price',
@@ -80,7 +79,7 @@ admin.site.register(Complaint, ComplaintAdmin)
 
 
 class OwnerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phonenumber', 'pure_phone', 'get_flats',)
+    list_display = ('name', 'pure_phone', 'get_flats',)
     raw_id_fields = ('flats',)
     search_fields = ['name']
     @admin.display(description='Квартиры в собственности')

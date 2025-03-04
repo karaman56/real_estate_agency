@@ -8,8 +8,8 @@ User = get_user_model()
 
 class Flat(models.Model):
     owner = models.CharField('ФИО владельца', max_length=200)
-    owners_phonenumber = models.CharField( 'Номер владельца', max_length=20, blank=True )
-    owner_pure_phone = PhoneNumberField('Нормализованный номер владельца', region='RU', blank=True, null=True)
+
+    owner_pure_phone = PhoneNumberField('Номер владельца', max_length=20, region='RU', blank=True, null=True)
 
     created_at = models.DateTimeField(
         'Когда создано объявление',
@@ -79,8 +79,8 @@ class Complaint(models.Model):
 
 class Owner(models.Model):
     name = models.CharField('ФИО владельца', max_length=200, db_index=True)
-    phonenumber = models.CharField('Номер владельца', max_length=20)
-    pure_phone = PhoneNumberField('Нормализованный номер', region='RU', blank=True, null=True)
+
+    pure_phone = PhoneNumberField('Номер владельца', max_length=20, region='RU', blank=True, null=True)
     flats = models.ManyToManyField(
         'Flat',
         related_name='owners',
