@@ -8,6 +8,7 @@ class OwnerFlatInline(admin.TabularInline):
     extra = 0
 
 
+@admin.register(Flat)
 class FlatAdmin(admin.ModelAdmin):
     inlines = [OwnerFlatInline]
     search_fields = ['town', 'address']
@@ -50,15 +51,9 @@ class FlatAdmin(admin.ModelAdmin):
         'created_at',
         'liked_by',
     )
-admin.site.register(Flat, FlatAdmin)
 
 
-class OwnerFlatInline(admin.TabularInline):
-    model = Flat.owners.through
-    raw_id_fields = ('owner',)
-    extra = 0
-
-
+@admin.register(Complaint)
 class ComplaintAdmin(admin.ModelAdmin):
     raw_id_fields = ['user', 'flat']
     readonly_fields = ['created_at']
@@ -66,25 +61,18 @@ class ComplaintAdmin(admin.ModelAdmin):
     search_fields = ('text',)
     list_filter = ('created_at',)
 
-
     def short_text(self, obj):
-        if obj.text:
-            return f"{obj.text[:50]}..." if len(obj.text) > 50 else obj.text
-        return "Текст отсутствует"
+        return f"{obj.text[:50]}..." if obj.text else "Текст отсутствует"
 
     short_text.short_description = 'Текст жалобы'
 
 
-admin.site.register(Complaint, ComplaintAdmin)
-
-
+@admin.register(Owner)
 class OwnerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'pure_phone', 'get_flats',)
+    list_display = ('name', 'pure_phone', 'get_flats')
     raw_id_fields = ('flats',)
     search_fields = ['name']
+
     @admin.display(description='Квартиры в собственности')
     def get_flats(self, obj):
         return ", ".join([flat.address for flat in obj.flats.all()])
-
-
-admin.site.register(Owner, OwnerAdmin)

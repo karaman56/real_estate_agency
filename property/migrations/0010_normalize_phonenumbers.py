@@ -6,24 +6,33 @@ import phonenumbers
 
 def normalize_phonenumbers(apps, schema_editor):
     Flat = apps.get_model('property', 'Flat')
-    for flat in Flat.objects.all():
-        if not flat.owners_phonenumber:
-            continue
+    batch_size = 500
+    flats = []
 
-        try:
-            parsed = phonenumbers.parse(flat.owners_phonenumber, 'RU')
-            if phonenumbers.is_valid_number(parsed):
-                flat.owner_pure_phone = phonenumbers.format_number(...)
-                flat.save(update_fields=['owner_pure_phone'])
-        except phonenumbers.NumberParseException:
-            flat.owner_pure_phone = None
-            flat.save()
+    for flat in Flat.objects.iterator(chunk_size=2000):
+        flat.owner_pure_phone = None  # Значение по умолчанию
+        if flat.owners_phonenumber:  # Проверяем, не пустой ли номер
+            try:
+                parsed = phonenumbers.parse(flat.owners_phonenumber, 'RU')
+                if phonenumbers.is_valid_number(parsed):
+                    flat.owner_pure_phone = phonenumbers.format_number(
+                        parsed,
+                        phonenumbers.PhoneNumberFormat.E164
+                    )
+            except phonenumbers.NumberParseException:
+                pass  # Значение уже None
+
+        flats.append(flat)
+
+        if len(flats) >= batch_size:
+            Flat.objects.bulk_update(flats, ['owner_pure_phone'])
+            flats = []
+
+
+    if flats:
+        Flat.objects.bulk_update(flats, ['owner_pure_phone'])
+
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ('property', '0009_flat_owners_phonenumber'),  # Укажите актуальную
-    ]
-
-    operations = [
-        migrations.RunPython(normalize_phonenumbers),
-    ]
+    dependencies = [('property', '0009_flat_owners_phonenumber')]
+    operations = [migrations.RunPython(normalize_phonenumbers)]
